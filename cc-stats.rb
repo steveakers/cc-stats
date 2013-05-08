@@ -42,7 +42,8 @@ def parse_cmd_line
        cc-stats [options] <metric_name>
            
     Examples:
-       need examples
+       cc-stats stats_counts.metric.name
+       cc-stats -b 1367366400 -e 1367539200 -g http://graphite.mydomain.com stats_counts.metric.name
 
     where [options] are:
     EOS
