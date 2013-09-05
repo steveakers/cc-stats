@@ -11,7 +11,8 @@
 **cc-stats** is a VERY special purpose command line tool to calculate mean and standard deviation from a dataset pulled from
 Graphite. For example, if you wanted to create a 1 hour control chart monitor using rearview you'd need a mean and standard
 deviation that was calculated using the same lowess smoothing parameters used in the control chart itself. This tool allows
-you to do that over a larger timeframe.
+you to do that over a larger timeframe. It also allows you to specify a time range when operations are 'shutdown' (e.g. do
+not use data between midnight and 8am.)
 
 ###OPTIONS
 
@@ -30,6 +31,12 @@ These options can be used to change this behavior:
 
 **-e, --end**<br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;End date in epoch time
+
+**-h, --hour_stop**<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Hour when operations stop (default: 0)
+
+**-d, --duration**<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Duraiton of shutdown (default: 0)
 
 **-i, --interval**<br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Interval in minutes (default: 60)

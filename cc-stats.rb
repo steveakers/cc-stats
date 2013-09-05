@@ -47,13 +47,13 @@ def parse_cmd_line
 
     where [options] are:
     EOS
-    opt :graphite,   "Graphite URI",               :short => "g", :default => "http://localhost:2003"
-    opt :verbose,    "Enable verbose output",      :short => "v", :default => false
-    opt :begin,      "Begin date in epoch time",   :short => "b", :default => 0
-    opt :end,        "End date in epoch time",     :short => "e", :default => 0
-    opt :hour_start, "Hour when operations start", :short => "h", :default => 12
-    opt :duration,   "Duration of operations",     :short => "d", :default => 24
-    opt :interval,   "Interval in minutes",        :short => "i", :default => 60
+    opt :graphite,  "Graphite URI",              :short => "g", :default => "http://localhost:2003"
+    opt :verbose,   "Enable verbose output",     :short => "v", :default => false
+    opt :begin,     "Begin date in epoch time",  :short => "b", :default => 0
+    opt :end,       "End date in epoch time",    :short => "e", :default => 0
+    opt :hour_stop, "Hour when operations stop", :short => "h", :default => 0
+    opt :duration,  "Duration of shutdown",      :short => "d", :default => 0
+    opt :interval,  "Interval in minutes",       :short => "i", :default => 60
   end
   opts
 end
@@ -74,7 +74,7 @@ def format_date(epoch)
 end
 
 
-def fetch_data(graphite, start, stop, metric, interval, hour_start, duration, verbose)
+def fetch_data(graphite, start, stop, metric, interval, hour_stop, duration, verbose)
   from_date  = start
   until_date = start + interval
  
@@ -83,7 +83,7 @@ def fetch_data(graphite, start, stop, metric, interval, hour_start, duration, ve
     current_hour = from_date.strftime("%H").to_i
     current_step = "#{'%02d' % (((from_date - start) / interval) + 1).round} of #{'%02d' % ((stop - start) / interval).round} => #{from_date} ... #{until_date}"
     
-    if current_hour < hour_start || current_hour >= hour_start + duration
+    if current_hour < hour_stop || current_hour >= hour_stop + duration
       puts current_step if verbose
   
       data_uri = URI.escape "#{graphite}/render?format=json&from=#{format_date(from_date)}&until=#{format_date(until_date)}&target=#{metric}"
@@ -116,13 +116,13 @@ def fetch_data(graphite, start, stop, metric, interval, hour_start, duration, ve
 end
 
 
-def print_stats(metric, graphite, start, stop, interval, hour_start, duration, verbose)
+def print_stats(metric, graphite, start, stop, interval, hour_stop, duration, verbose)
   Trollop::die "You must provide a metric name" if metric.nil?
   
   trap("INT") { puts " ABORTED"; exit }
   
   puts "\nFETCHING DATA" if verbose
-  values = fetch_data graphite, start, stop, metric, interval, hour_start, duration, verbose
+  values = fetch_data graphite, start, stop, metric, interval, hour_stop, duration, verbose
 
   puts "\nRESULTS\nMean = #{values.mean.round(2)}\nStandard Deviation = #{values.stdev.round(2)}\n\n"
 end
@@ -132,11 +132,11 @@ if __FILE__ == $0
   opts       = parse_cmd_line
   graphite   = opts[:graphite]
   interval   = opts[:interval] * 60
-  hour_start = opts[:hour_start]
+  hour_stop = opts[:hour_stop]
   duration   = opts[:duration]
   verbose    = opts[:verbose]
 
   start, stop   = get_dates opts[:begin], opts[:end]
   
-  print_stats ARGV[0], graphite, start, stop, interval, hour_start, duration, verbose
+  print_stats ARGV[0], graphite, start, stop, interval, hour_stop, duration, verbose
 end
