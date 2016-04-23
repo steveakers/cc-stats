@@ -20,7 +20,7 @@ not use data between midnight and 8am.)
 
 These options can be used to change this behavior:
 
-**-g, --graphite <s>**<br />
+**-g, --graphite**<br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Graphite URI (default: http://localhost:2300)
 
 **-v, --verbose**<br />
